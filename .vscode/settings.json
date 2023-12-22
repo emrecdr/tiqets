@@ -1,0 +1,16 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "always",
+            "source.fixAll": "always"
+          }
+    },
+    "files.trimFinalNewlines": true,
+    "sonarlint.connectedMode.project": {
+        "connectionId": "http-localhost-9090",
+        "projectKey": "tiqets-assignment-solution"
+    }
+ }
