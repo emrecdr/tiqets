@@ -1,6 +1,6 @@
-# Project Name
+# Tiqets Assignment Solution
 
-This project reads orders and ticket barcodes data from CSV files, validates the data, and generates an output containing the customer ID, order ID, and a list of ticket barcodes for each order. It also calculates the top N customers who bought the most books and the number of unused book barcodes. This project mainly uses the [Polars](https://pola-rs.github.io) library for data processing.
+This project reads orders and ticket barcodes data from CSV files, validates the data, and generates an output containing the customer ID, order ID, and a list of ticket barcodes for each order. It also calculates the top N customers who bought the most books and the number of unused book barcodes. This project mainly uses the [Polars](https://pola.rs/) library for data processing.
 
 ## Table of Contents
 

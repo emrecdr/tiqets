@@ -1,8 +1,7 @@
-from datetime import datetime
-import logging
 import os
 import pathlib
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Optional
 
 from errors import ConfigError
@@ -19,7 +18,6 @@ class AppArguments:
     - top_n: The number of top customers to consider. Default is 5.
     - debug: Whether to enable debug mode. Default is False.
     - output_folder_path: The directory where the output file will be saved. Default is "out".
-    - log_level: The log level based on the debug mode.
     - orders_file_path: The resolved path to the orders file.
     - barcodes_file_path: The resolved path to the barcodes file.
     - output_file_path: The resolved path to the output file.
@@ -31,7 +29,6 @@ class AppArguments:
     top_n: Optional[int] = 5
     debug: bool = False
     output_folder_path: str = "out"
-    log_level: str = field(init=False)
     orders_file_path: pathlib.Path = field(init=False)
     barcodes_file_path: pathlib.Path = field(init=False)
     output_file_path: pathlib.Path = field(init=False)
@@ -46,8 +43,6 @@ class AppArguments:
         Raises:
             ConfigError: If the orders or barcodes file does not exist.
         """
-        # Set log level according to debug
-        self.log_level = logging.INFO if self.debug else logging.WARNING
         # Turn string directories into path objs
         app_path = pathlib.Path(__file__).resolve().parent.parent
         input_file_path = app_path / self.file_path
