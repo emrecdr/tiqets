@@ -1,18 +1,25 @@
-# Tiqets Assignment Solution
+# Ticket Order Processing System
 
-This project reads orders and ticket barcodes data from CSV files, validates the data, and generates an output containing the customer ID, order ID, and a list of ticket barcodes for each order. It also calculates the top N customers who bought the most books and the number of unused book barcodes. This project mainly uses the [Polars](https://pola.rs/) library for data processing.
+This project is a robust ticket order processing system that reads order and ticket barcode data from CSV files, validates the data, and generates an output containing the customer ID, order ID, and a list of ticket barcodes for each order. It also calculates the top N customers who bought the most tickets and the number of unused ticket barcodes. The project primarily uses the [Polars](https://pola.rs/) library for efficient data processing.
+
 
 ## Table of Contents
 
 - [Installation](#installation)
+  - [Local Installation](#locally)
+  - [Docker Installation](#docker)
 - [Usage](#usage)
+  - [Local Usage](#locally-1)
+  - [Docker Usage](#docker-1)
+  - [Docker Compose Usage](#docker-compose)
+- [Database Schema](#moving-forward)
 
 ## Installation 
 
 ### Locally
 To install locally, you need to have Python 3 installed on your machine. You will also need to install the dependencies using pip:
 ```bash
-pip install --no-cache-dir -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Docker
@@ -25,36 +32,54 @@ docker build --tag tiqets-assignment-app .
 
 You can run the application with the names of the orders and books CSV files as arguments.
 The script will then read these files, match each order to a barcode (or multiple if they are present) and to a customer, and output this information to a csv file under "out" folder. 
-It will also print out a list of top N  customers that bought the most amount of tickets (default is 5) along with their count and amount of unused barcodes.
+It will also print out a list of top N customers that bought the most amount of tickets (default is 5) along with their count and amount of unused barcodes.
 The script checks for duplicate barcodes and orders without barcodes. Any invalid data is logged and ignored for the output.
 
-### Locally
+Available script params can be checked by:
+```
+python ./src/main.py -h    
+```
+
+* ### Locally
 Python script can be executed locally by providing only required parameters:
 
 ```bash
-python ./src/app.py orders.csv barcodes.csv 
+python ./src/main.py barcodes.csv orders.csv 
 ```
 
-OR by also including optional parameters:
+Or by also including optional parameters:
 
 ```bash
-python ./src/app.py orders.csv barcodes.csv --file_path data --top_n 3 --debug
+python ./src/main.py barcodes.csv orders.csv --file_path data --top_n 3 --debug
 ```
 
-### Docker
+* ### Docker
 The outputs will be saved in `out` directory, which is mounted to your local filesystem at `./out`.
 To execute from a Docker container use:
 
 ```bash
-docker run -v ./out:/home/appuser/app/out py-solution-app orders.csv barcodes.csv
+docker run -v ./out:/home/appuser/app/out tiqets-assignment-app barcodes.csv orders.csv
 ```
-OR   
+Or   
 ```bash
-docker run -v ./out:/home/appuser/app/out py-solution-app orders.csv barcodes.csv --file_path data --top_n 3 --debug
+docker run -v ./out:/home/appuser/app/out tiqets-assignment-app barcodes.csv orders.csv --file_path data --top_n 3 --debug
+```
+
+* ### Docker Compose
+The outputs will be saved in `out` directory, which is mounted to your local filesystem at `./out`.
+To execute from a Docker container use:
+
+```bash
+docker compose run -e BARCODES=barcodes.csv -e ORDERS=orders.csv solutionapp
+```
+Or   
+```bash
+docker compose run -e BARCODES=barcodes.csv -e ORDERS=orders.csv -e TOP_N=2 -e APP_DEBUG=1 solutionapp
 ```
 
 ## Moving forward
-Inorder to store this data set in a SQL database, we can design a simple relational db schema with three tables: Customers, Orders, and Barcodes like below:
+To store this data set in a SQL database, we can design a simple relational db schema with three tables: Customers, Orders, and Barcodes. 
+This will allow us to represent the given dataset in a structured way and perform efficient queries.
 
 ```text
 +------------------------+        +----------------------+        +-------------------+
@@ -66,7 +91,7 @@ Inorder to store this data set in a SQL database, we can design a simple relatio
 
 ```
 
-Simplified SQL representation of the schema:
+Here's a simplified SQL representation of the schema:
 
 ```sql
 CREATE TABLE Customers (

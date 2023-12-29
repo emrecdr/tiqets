@@ -1,0 +1,16 @@
+services:
+    solutionapp:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        environment:
+            - BARCODES
+            - ORDERS
+            - FILE_PATH
+            - TOP_N
+            - APP_DEBUG
+        
+        container_name: tiqets-assignment-solution
+        
+        volumes:
+            - ./out:/home/appuser/app/out

@@ -9,14 +9,18 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
+            "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
-                "orders0.csv",
                 "barcodes0.csv",
+                "orders0.csv",
                 "--top_n", "2",
                 "--debug"
-            ]
+            ],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
         },
         {
             "name": "Python: Attach",
