@@ -7,7 +7,7 @@ from models.errors import AppReaderError
 
 class CSVReader:
     @staticmethod
-    def read(file_path: Path | str) -> pl.DataFrame | AppReaderError:
+    def read(file_path: Path | str) -> pl.DataFrame:
         """Reads a CSV file and returns a Polars DataFrame."""
         try:
             return pl.read_csv(file_path)
