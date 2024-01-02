@@ -9,9 +9,7 @@ class BaseProcessor(Protocol):
     orders_df: pl.DataFrame
     merged_df: pl.DataFrame
 
-    def set_dataframes(
-        self, barcodes_df: pl.DataFrame, orders_df: pl.DataFrame
-    ) -> None:
+    def set_dataframes(self, barcodes_df: pl.DataFrame, orders_df: pl.DataFrame) -> None:
         ...
 
     def merge_dataframes(self) -> pl.DataFrame:

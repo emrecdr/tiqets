@@ -31,7 +31,7 @@ VOLUME ./out
 # Copy the requirements file to the container
 COPY --chown=appuser:appuser ./requirements.txt ./entrypoint.sh ./
 
-# Install the Python dependencies using Python 
+# Install the Python dependencies using Python
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the content of the local data directory to the working directory of the container

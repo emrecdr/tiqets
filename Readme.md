@@ -14,7 +14,7 @@ This project is a robust ticket order processing system that reads order and tic
   - [Docker Compose Usage](#docker-compose)
 - [Database Schema](#moving-forward)
 
-## Installation 
+## Installation
 
 ### Locally
 To install locally, you need to have Python 3 installed on your machine. You will also need to install the dependencies using pip:
@@ -31,20 +31,20 @@ docker build --tag tiqets-assignment-app .
 ## Usage
 
 You can run the application with the names of the orders and books CSV files as arguments.
-The script will then read these files, match each order to a barcode (or multiple if they are present) and to a customer, and output this information to a csv file under "out" folder. 
+The script will then read these files, match each order to a barcode (or multiple if they are present) and to a customer, and output this information to a csv file under "out" folder.
 It will also print out a list of top N customers that bought the most amount of tickets (default is 5) along with their count and amount of unused barcodes.
 The script checks for duplicate barcodes and orders without barcodes. Any invalid data is logged and ignored for the output.
 
 Available script params can be checked by:
 ```
-python ./src/main.py -h    
+python ./src/main.py -h
 ```
 
 * ### Locally
 Python script can be executed locally by providing only required parameters:
 
 ```bash
-python ./src/main.py barcodes.csv orders.csv 
+python ./src/main.py barcodes.csv orders.csv
 ```
 
 Or by also including optional parameters:
@@ -60,7 +60,7 @@ To execute from a Docker container use:
 ```bash
 docker run -v ./out:/home/appuser/app/out tiqets-assignment-app barcodes.csv orders.csv
 ```
-Or   
+Or
 ```bash
 docker run -v ./out:/home/appuser/app/out tiqets-assignment-app barcodes.csv orders.csv --file_path data --top_n 3 --debug
 ```
@@ -72,13 +72,13 @@ To execute from a Docker container use:
 ```bash
 docker compose run -e BARCODES=barcodes.csv -e ORDERS=orders.csv solutionapp
 ```
-Or   
+Or
 ```bash
 docker compose run -e BARCODES=barcodes.csv -e ORDERS=orders.csv -e TOP_N=2 -e APP_DEBUG=1 solutionapp
 ```
 
 ## Moving forward
-To store this data set in a SQL database, we can design a simple relational db schema with three tables: Customers, Orders, and Barcodes. 
+To store this data set in a SQL database, we can design a simple relational db schema with three tables: Customers, Orders, and Barcodes.
 This will allow us to represent the given dataset in a structured way and perform efficient queries.
 
 ```text

@@ -1,12 +1,41 @@
 {
+    "files.exclude": {
+        "out": true,
+        "dist": true,
+        "**/*.pyc": true,
+        ".nyc_output": true,
+        "obj": true,
+        "bin": true,
+        "**/__pycache__": true,
+        "**/node_modules": true,
+        ".vscode-test": false,
+        ".vscode test": false,
+        "**/.mypy_cache/**": true,
+        ".history": true,
+    },
+    "search.exclude": {
+        "out": true,
+        "dist": true,
+        "**/node_modules": true,
+        "coverage": true,
+        "languageServer*/**": true,
+        ".vscode-test": true,
+        ".vscode test": true,
+        ".history": true,
+    },
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnPaste": true,
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
-            "source.organizeImports": "always",
+            "source.organizeImports": "explicit",
+            "source.organizeImports.isort": "explicit",
             "source.fixAll": "always"
-          }
+        }
+    },
+     "[JSON]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
     },
     "files.trimFinalNewlines": true,
     "sonarlint.connectedMode.project": {
@@ -24,4 +53,7 @@
         "--cov=src/",
         "--cov-report=term-missing",
     ],
+    "flake8.args": ["--ignore=E203,E266,E501,W503,B950,F821,B903", "--max-line-length=120"],
+    "black-formatter.args": ["--target-version", "py38"],
+    "isort.args": ["--profile", "black", "--line-length", "120"]
  }

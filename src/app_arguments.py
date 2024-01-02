@@ -49,14 +49,10 @@ class AppArguments:
         for name in ["orders_file", "barcodes_file"]:
             file_name = self.__dict__[name]
             self.__dict__[f"{name}_path"]: pathlib.Path = (
-                pathlib.Path(file_name)
-                if file_name.startswith(os.path.sep)
-                else input_file_path / file_name
+                pathlib.Path(file_name) if file_name.startswith(os.path.sep) else input_file_path / file_name
             )
             if not self.__dict__[f"{name}_path"].exists():
-                raise AppConfigError(
-                    f"Unable to find given {name!r} file {file_name!s}."
-                )
+                raise AppConfigError(f"Unable to find given {name!r} file {file_name!s}.")
 
         self.output_file_path = (
             app_path

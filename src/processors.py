@@ -14,30 +14,35 @@ class DataProcessor:
         self.orders_df = orders_df
         self.merged_df = self.merge_dataframes()
 
-    def merge_dataframes(self) -> pl.DataFrame:
+    def merge_dataframes(self) -> pl.DataFrame | None:
         """
         Merge orders and barcodes dataframes.
 
         Returns:
             pl.DataFrame: Merged DataFrame.
         """
-        return self.orders_df.join(self.barcodes_df, on="order_id", how="left")
+        return (
+            self.orders_df.join(self.barcodes_df, on="order_id", how="left")
+            if self.orders_df is not None and self.barcodes_df is not None
+            else None
+        )
 
-    def get_aggregated_data(self) -> pl.DataFrame:
+    def get_aggregated_data(self) -> pl.DataFrame | None:
         """
         Group the merged dataframe by customer_id and order_id and aggregate the grouped dataframe.
 
         Returns:
             pl.DataFrame: Aggregated DataFrame.
         """
+        if self.merged_df is None:
+            return None
+
         grouped = self.merged_df.groupby(["customer_id", "order_id"])
 
         # Aggregate the grouped dataframe to get the list of barcodes for each order
-        return grouped.agg(
-            pl.col("barcode").alias("barcodes").apply(lambda col: str(col.to_list()))
-        )
+        return grouped.agg(pl.col("barcode").alias("barcodes").apply(lambda col: str(col.to_list())))
 
-    def get_top_n_customers(self, top_n: int = 5) -> pl.DataFrame:
+    def get_top_n_customers(self, top_n: int = 5) -> pl.DataFrame | None:
         """
         Get top N customers who bought the most barcodes.
 
@@ -48,17 +53,21 @@ class DataProcessor:
             pl.DataFrame: DataFrame with top N customers.
         """
         return (
-            self.merged_df.groupby("customer_id")
-            .agg(pl.count("barcode").alias("total_barcodes"))
-            .sort("total_barcodes", descending=True)
-            .limit(top_n)
+            (
+                self.merged_df.groupby("customer_id")
+                .agg(pl.count("barcode").alias("total_barcodes"))
+                .sort("total_barcodes", descending=True)
+                .limit(top_n)
+            )
+            if self.merged_df is not None
+            else None
         )
 
-    def get_unused_barcodes_count(self) -> int:
+    def get_unused_barcodes_count(self) -> int | None:
         """
         Returns the count of unused barcodes.
 
         Returns:
             int: The count of unused barcodes.
         """
-        return self.barcodes_df["order_id"].is_null().sum()
+        return int(self.barcodes_df["order_id"].is_null().sum()) if self.barcodes_df is not None else None

@@ -1,6 +1,7 @@
-import pytest
 from pathlib import Path
-from src.models.errors import AppReaderError
+
+import pytest
+
 from src.readers import CSVReader
 
 
@@ -16,6 +17,7 @@ def tmp_csv(tmp_path):
 
 
 # Happy path tests with various realistic test values
+@pytest.mark.csv
 @pytest.mark.parametrize(
     "file_content, test_id",
     [
@@ -42,6 +44,7 @@ def test_read_csv_happy_path(tmp_csv, file_content, test_id):
 
 
 # Edge cases
+@pytest.mark.csv
 @pytest.mark.parametrize(
     "file_content, expected_shape, test_id",
     [
@@ -63,6 +66,7 @@ def test_read_csv_edge_cases(tmp_csv, file_content, expected_shape, test_id):
 
 
 # Error cases
+@pytest.mark.csv
 @pytest.mark.parametrize(
     "file_content, test_id",
     [("", "empty_file_simple")],
@@ -74,11 +78,10 @@ def test_read_csv_empty_files(tmp_csv, file_content, test_id):
     # Act & Assert
     with pytest.raises(Exception) as excinfo:
         _ = CSVReader.read(file_path)
-    assert str(excinfo.value).startswith(
-        "Unable to read file"
-    ), f"Failed test ID: {test_id}"
+    assert str(excinfo.value).startswith("Unable to read file"), f"Failed test ID: {test_id}"
 
 
+@pytest.mark.csv
 @pytest.mark.parametrize(
     "file_path, test_id",
     [
@@ -91,6 +94,4 @@ def test_read_csv_error_cases(file_path, test_id):
     # Act & Assert
     with pytest.raises(Exception) as excinfo:
         _ = CSVReader.read(file_path)
-    assert str(excinfo.value).startswith(
-        "Unable to read file"
-    ), f"Failed test ID: {test_id}"
+    assert str(excinfo.value).startswith("Unable to read file"), f"Failed test ID: {test_id}"

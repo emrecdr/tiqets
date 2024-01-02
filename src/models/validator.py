@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, TypedDict, Protocol, Any, NotRequired
+from typing import Any, List, NotRequired, Protocol, TypedDict
 
 from polars import DataFrame
 
@@ -14,14 +14,7 @@ class ValidationError:
         error_output_rows = (
             ""
             if self.failed_rows is None
-            else (
-                "\n".join(
-                    [
-                        ", ".join([f'"{key}": {value}' for key, value in d.items()])
-                        for d in self.failed_rows
-                    ]
-                )
-            )
+            else ("\n".join([", ".join([f'"{key}": {value}' for key, value in d.items()]) for d in self.failed_rows]))
         )
         return f"{self.error_message} \n{error_output_rows}"
 

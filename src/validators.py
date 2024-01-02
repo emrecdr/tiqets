@@ -14,26 +14,18 @@ class DataValidator:
         try:
             duplicated_barcodes = self._get_duplicated_barcodes(df, column)
             if duplicated_barcodes is None:
-                return dict(is_valid=True)
+                return {"is_valid": True}
 
             # there are duplicated values in the specified column
             return {
                 "is_valid": False,
-                "errors": [
-                    ValidationError(
-                        "Duplicate barcodes found", duplicated_barcodes.to_dicts()
-                    )
-                ],
+                "errors": [ValidationError("Duplicate barcodes found", duplicated_barcodes.to_dicts())],
                 "data": df.unique(subset=[column], keep="none", maintain_order=True),
             }
         except Exception as exc:
             return {
                 "is_valid": False,
-                "errors": [
-                    ValidationError(
-                        f"Error occured during validation: {exc!s}", df.to_dicts()
-                    )
-                ],
+                "errors": [ValidationError(f"Error occured during validation: {exc!s}", df.to_dicts())],
                 "data": df.clear(),
             }
 
@@ -41,33 +33,27 @@ class DataValidator:
         """Checks that all orders have a corresponding barcode."""
         orphan_orders = self._get_orders_wo_barcodes(df, column)
         if orphan_orders is None:
-            return dict(is_valid=True)
+            return {"is_valid": True}
 
         #  there are missing values in the specified column.
         return {
             "is_valid": False,
-            "errors": [
-                ValidationError(
-                    "Orders without barcodes found", orphan_orders.to_dicts()
-                )
-            ],
+            "errors": [ValidationError("Orders without barcodes found", orphan_orders.to_dicts())],
             "data": df.drop_nulls(subset=column),
         }
 
     @staticmethod
-    def _get_duplicated_barcodes(
-        df: pl.DataFrame, column: str
-    ) -> Optional[pl.DataFrame]:
+    def _get_duplicated_barcodes(df: pl.DataFrame, column: str) -> Optional[pl.DataFrame]:
         """Returns if there are duplicated values in the specified column."""
         if df[column].is_duplicated().any():
             # return duplicate barcodes
             return df.filter(df[column].is_duplicated())
+        return None
 
     @staticmethod
-    def _get_orders_wo_barcodes(
-        df: pl.DataFrame, column: str
-    ) -> Optional[pl.DataFrame]:
+    def _get_orders_wo_barcodes(df: pl.DataFrame, column: str) -> Optional[pl.DataFrame]:
         """Returns if there are missing values in the specified column."""
         if df[column].is_null().any():
             # return orders without barcodes
             return df.filter(pl.col(column).is_null())
+        return None
