@@ -1,4 +1,3 @@
-import argparse
 import logging
 
 from app_arguments import AppArguments
@@ -7,27 +6,8 @@ from models.reader import BaseReader
 from models.validator import BaseValidator, ValidationResult
 from processors import DataProcessor
 from readers import CSVReader
+from utils import get_logger, parse_args
 from validators import DataValidator
-
-
-def parse_args() -> AppArguments:
-    """Parse & return command line args"""
-    # Create the parser
-    parser = argparse.ArgumentParser(
-        description="Parse & Display customer, order datasets from given sources",
-        allow_abbrev=False,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-
-    # Add the arguments
-    parser.add_argument("barcodes_file", type=str, help="Name of the barcodes csv file.")
-    parser.add_argument("orders_file", type=str, help="Name of the orders csv file.")
-    parser.add_argument("-p", "--file_path", type=str, default="data", help="Path of the dataset files")
-    parser.add_argument("-t", "--top_n", type=int, default=5, help="Number of top customers to display.")
-    parser.add_argument("-d", "--debug", action="store_true", help="Enables debugging mode.")
-
-    cli_args, _ = parser.parse_known_args()
-    return AppArguments(**vars(cli_args))
 
 
 # Main function
@@ -58,7 +38,10 @@ def main(args: AppArguments, logger: logging.Logger):
         for error_pair in barcode_validation["errors"]:
             logger.warning(f"{error_pair!s}")
 
-    processor.set_dataframes(barcodes_df, orders_df)
+    set_df_proc = processor.set_dataframes(barcodes_df, orders_df)
+    if not set_df_proc["is_ok"]:
+        logger.error(set_df_proc["error"])
+        return
 
     order_validation = validator.validate_orders(processor.merged_df, "barcode")
     if not order_validation["is_valid"]:
@@ -68,35 +51,42 @@ def main(args: AppArguments, logger: logging.Logger):
         processor.merged_df = order_validation["data"]
 
     # Process data
-    aggregated_df = processor.get_aggregated_data()
+    aggregate_proc = processor.get_aggregated_data()
+    if not aggregate_proc["is_ok"]:
+        logger.error(aggregate_proc["error"])
+        return
 
     # Generate the processed output dataset
-    aggregated_df.write_csv(args.output_file_path, separator=",")
+    aggregate_proc["data"].write_csv(args.output_file_path, separator=",")
     logger.info(f"Processed data file is generated {args.output_file_path.name!s}.")
 
     # Get top N customers & output
-    top_customers = processor.get_top_n_customers(args.top_n)
-    output = [
-        f"Top {args.top_n} customers:",
-        f"{'Customer ID': ^15}, {'Total Barcodes': ^15}",
-    ] + [f"{row['customer_id']: ^15}, {row['total_barcodes']: ^15}" for row in top_customers.rows(named=True)]
-    logger.info("\n".join(output))
+    top_customers_proc = processor.get_top_n_customers(args.top_n)
+    if not top_customers_proc["is_ok"]:
+        logger.warning(aggregate_proc["error"])
+    else:
+        output = [
+            f"Top {args.top_n} customers:",
+            f"{'Customer ID': ^15}, {'Total Barcodes': ^15}",
+        ] + [
+            f"{row['customer_id']: ^15}, {row['total_barcodes']: ^15}"
+            for row in top_customers_proc["data"].rows(named=True)
+        ]
+        logger.info("\n".join(output))
 
     # Output number of unused barcodes
-    logger.info(f"Number of unused barcodes: {processor.get_unused_barcodes_count()!s}.")
+    unused_barcodes_proc = processor.get_unused_barcodes_count()
+    if not unused_barcodes_proc["is_ok"]:
+        logger.warning(unused_barcodes_proc["error"])
+    else:
+        logger.info(f"Number of unused barcodes: {unused_barcodes_proc['data']!s}.")
 
 
 # App entry point
 if __name__ == "__main__":
     # Parse command-line arguments
     args = parse_args()
-
-    # Configure logging, set log level according to debug
-    logging.basicConfig(
-        level=logging.DEBUG if args.debug else logging.INFO,
-        format="%(levelname)s: %(message)s",
-    )
-    logger = logging.getLogger("MainApp")
+    logger = get_logger("MainApp", args.debug)
 
     logger.debug(f"Starting process with args: {args}")
     main(args, logger)

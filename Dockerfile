@@ -20,13 +20,15 @@ RUN adduser \
     appuser
 
 # Create the work dir and set permissions as WORKDIR set the permissions as root
-RUN mkdir -p /home/appuser/app/out && chown -R appuser:appuser /home/appuser/app
+RUN mkdir -p /home/appuser/app/out/logs && chown -R appuser:appuser /home/appuser/app
 # Setup the working directory for the container
 WORKDIR /home/appuser/app
 
 USER appuser
 
 VOLUME ./out
+
+RUN touch ./out/logs/errors
 
 # Copy the requirements file to the container
 COPY --chown=appuser:appuser ./requirements.txt ./entrypoint.sh ./

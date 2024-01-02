@@ -19,7 +19,7 @@ class ValidationError:
         return f"{self.error_message} \n{error_output_rows}"
 
 
-# Interface for the return object type
+# Interface for the validation method return object type
 class ValidationResult(TypedDict):
     is_valid: bool
     errors: NotRequired[List[ValidationError] | None]

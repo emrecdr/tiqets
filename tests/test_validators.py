@@ -64,7 +64,7 @@ def test_validate_valid_barcodes(input_data, expected_result, test_id):
             {"barcode": [], "order": []},
             {
                 "is_valid": False,
-                "errors": [ValidationError("Error occured during validation:", [])],
+                "errors": [ValidationError("Error occurred during validation:", [])],
                 "data": {"barcode": [], "order": []},
             },
             "edge_empty_df",

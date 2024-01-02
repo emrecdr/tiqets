@@ -1,5 +1,3 @@
-from typing import Optional
-
 import polars as pl
 
 from models.validator import ValidationError, ValidationResult
@@ -25,7 +23,7 @@ class DataValidator:
         except Exception as exc:
             return {
                 "is_valid": False,
-                "errors": [ValidationError(f"Error occured during validation: {exc!s}", df.to_dicts())],
+                "errors": [ValidationError(f"Error occurred during validation: {exc!s}", df.to_dicts())],
                 "data": df.clear(),
             }
 
@@ -43,7 +41,7 @@ class DataValidator:
         }
 
     @staticmethod
-    def _get_duplicated_barcodes(df: pl.DataFrame, column: str) -> Optional[pl.DataFrame]:
+    def _get_duplicated_barcodes(df: pl.DataFrame, column: str) -> pl.DataFrame | None:
         """Returns if there are duplicated values in the specified column."""
         if df[column].is_duplicated().any():
             # return duplicate barcodes
@@ -51,7 +49,7 @@ class DataValidator:
         return None
 
     @staticmethod
-    def _get_orders_wo_barcodes(df: pl.DataFrame, column: str) -> Optional[pl.DataFrame]:
+    def _get_orders_wo_barcodes(df: pl.DataFrame, column: str) -> pl.DataFrame | None:
         """Returns if there are missing values in the specified column."""
         if df[column].is_null().any():
             # return orders without barcodes

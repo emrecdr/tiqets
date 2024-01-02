@@ -1,6 +1,13 @@
-from typing import Protocol
+from typing import Any, NotRequired, Protocol, TypedDict
 
 import polars as pl
+
+
+# Interface for the process method return object type
+class ProcessResult(TypedDict):
+    is_ok: bool
+    error: NotRequired[str | None]
+    data: NotRequired[Any]
 
 
 # Base interface for all processor classes
@@ -9,17 +16,14 @@ class BaseProcessor(Protocol):
     orders_df: pl.DataFrame
     merged_df: pl.DataFrame
 
-    def set_dataframes(self, barcodes_df: pl.DataFrame, orders_df: pl.DataFrame) -> None:
+    def set_dataframes(self, barcodes_df: pl.DataFrame, orders_df: pl.DataFrame) -> ProcessResult:
         ...
 
-    def merge_dataframes(self) -> pl.DataFrame:
+    def get_aggregated_data(self) -> ProcessResult:
         ...
 
-    def get_aggregated_data(self) -> pl.DataFrame:
+    def get_top_n_customers(self, top_n: int = 5) -> ProcessResult:
         ...
 
-    def get_top_n_customers(self, top_n: int = 5) -> pl.DataFrame:
-        ...
-
-    def get_unused_barcodes_count(self) -> int:
+    def get_unused_barcodes_count(self) -> ProcessResult:
         ...
